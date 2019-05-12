@@ -39,7 +39,7 @@ class ImageAttributes
         } elseif (strpos($this->uri, 'x')) {
             $attributes = explode('x', $this->uri);
         } else {
-            $attributes = $this->uri;
+            $attributes = (int) $this->uri;
         }
 
         if (empty($attributes[0])) {
