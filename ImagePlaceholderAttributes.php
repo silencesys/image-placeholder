@@ -1,6 +1,6 @@
 <?php
 
-class ImageAttributes 
+class ImagePlaceholderAttributes 
 {
     /** @param string */
     protected $uri;
@@ -22,9 +22,16 @@ class ImageAttributes
         $this->uri = substr($uri[0], 1);
         $this->get = isset($uri[1]) ? explode('&', $uri[1]) : null;
 
-        $this->width  = $this->imageSize()['width'];
-        $this->height = $this->imageSize()['height'];
+        if ($this->haveSize()) {
+            $this->width  = (int) $this->imageSize('width');
+            $this->height = (int) $this->imageSize('height');
+        }
+
         $this->styles = $this->imageAttributes();
+    }
+
+    public function haveSize() {
+        return is_numeric($this->imageSize('width'));
     }
 
     /**
@@ -32,7 +39,7 @@ class ImageAttributes
     *
     * @return array
     */
-    public function imageSize(): array
+    public function imageSize(string $attribute = null)
     {
         if (strpos($this->uri, '-') > -1) {
             $attributes = explode('-', $this->uri);
@@ -42,14 +49,16 @@ class ImageAttributes
             $attributes = [$this->uri];
         }
 
-        if (empty($attributes[0])) {
-            die("Something went wrong, are you sure that you specified size of the image?");
-        }
-        
-        return [
+        $sizes =  [
             'width' => $attributes[0],
             'height' => isset($attributes[1]) ? $attributes[1] : $attributes[0]
         ];
+
+        if (isset($attribute)) {
+            return $sizes[$attribute];
+        }
+        
+        return $sizes;
     } 
 
     /**
